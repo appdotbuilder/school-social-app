@@ -1,8 +1,19 @@
+import { db } from '../db';
+import { postsTable } from '../db/schema';
 import { type GetPostsByAuthorInput, type Post } from '../schema';
+import { eq, desc } from 'drizzle-orm';
 
 export async function getPostsByAuthor(input: GetPostsByAuthorInput): Promise<Post[]> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching all posts created by a specific user
-    // for their profile page display, ordered by creation date.
-    return [];
+  try {
+    const result = await db.select()
+      .from(postsTable)
+      .where(eq(postsTable.author_id, input.author_id))
+      .orderBy(desc(postsTable.created_at))
+      .execute();
+
+    return result;
+  } catch (error) {
+    console.error('Failed to get posts by author:', error);
+    throw error;
+  }
 }
